@@ -9,13 +9,15 @@ For this tutorial, we’ll be implementing a number of small transformations and
 
 First things first. In order to declare a document to be an XSL stylesheet, we need a specific tag at the top:
 
+```
 <xsl:transform version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+```
 
 This gives us access to XSLT elements, attributes and features we’ll need to apply it.
 
 Now there’re several tags we’ll learn about and we’ll summarize them here in order of which we’ll learn.
-
+```
 <xsl:template> -- Defines a set of rules to apply when a specific node(set of nodes) are matched.
 <xsl:value-of> -- Extracts the value (Text) of the selected node
 <xsl:for-each> -- Iterative structure to search set of nodes
@@ -25,52 +27,70 @@ Now there’re several tags we’ll learn about and we’ll summarize them here 
 <xsl:copy-of> -- Creates copy of current node (with children and attrs)
 <xsl:text> -- Writes literal text to output.
 <xsl:function>
+```
 Now, to start, we’re going to do a very simple XSLT script to transform expressions of the form:
 
+```
 int number = rand();
-
+```
 into the form:
 
+```
 int number;
 number = rand();
+```
 
 The first thing we need to do is copy the entire document (since we need a copy in-memory to work on). To do this we apply what’s called an identity copy:
 
+```
 <!-- default identity copy -->
 <xsl:template match="@* | node()">
    <xsl:copy>
        <xsl:apply-templates select="@* | node()"/>
    </xsl:copy>
 </xsl:template>
-
+```
 
 Which is a pretty standard operation. We’ll find that, as mentioned before, xslt follows the ‘match and transform’ idiom. So it makes sense that the first thing we need to do is match the nodes we want to apply a transformation to:
 
+```
 <xsl:template match="src:decl_stmt">
 </xsl:template>
+```
 
 So using <xsl:template> we specify that we want to match decl_stmts within the srcML archive. After we’ve matched the context, any xpath we write within the <template> will now be built on top of this context (so we don’t need to rewrite it). Let’s get the name of the type next:
 
+```
 <xsl:copy-of select="src:decl/src:type/src:name"/>
+```
 
 And now add a space between the type and the name of the variable
 
+```
 <xsl:text> </xsl:text>
+```
 
 And now we add the name of the variable
 
+```
 <xsl:copy-of select="src:decl/src:name"/>;
+```
 
 This finishes the first part of our transformation. Now the delcaration:
 
+```
 int number = rand();
+```
 
 Would be transformed into:
 
+```
 int number;
+```
 
 As a side note, this would all be copied without proper spacing going in front of the declaration… to copy the spaces properly, we require the xslt tokenize function. All in all, our code so far looks like this:
 
+```
 <xsl:template match="src:decl_stmt[src:decl/src:init]">
 <!-- Copy the declaration, without any part of the initialization -->
 <xsl:text>
@@ -79,25 +99,31 @@ As a side note, this would all be copied without proper spacing going in front o
     <xsl:copy-of select="src:decl/src:type/src:name"/>
     <xsl:text> </xsl:text>
     <xsl:copy-of select="src:decl/src:name"/>;
-
+```
 
 Now we’re ready to copy the initialization:
 
+```
 <xsl:variable name="ndecl">
         <xsl:value-of select="src:decl/src:name[1]"/>
         <xsl:value-of select="src:decl/src:init"/>;
 </xsl:variable>
+```
 
 We also show off the use of xslt variables here. Now the variable contains the text found in both of these xpath expressions. Again, we need tokenize so that the line:
 
+```
 number = rand()
+```
 
 is properly indented. Then we output the value of the variable “ndecl” and close the template
 
+```
 <!-- Copy the generated try catch with the indentation of the original statement -->
     <xsl:value-of select="str:tokenize(preceding-sibling::text(), $newline)[2]"/>
     <xsl:value-of select="src:indent(src:indentation(.), $ndecl)"/>
  </xsl:template>
+```
 
 This completes our first transformation.
 
