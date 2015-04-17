@@ -26,7 +26,7 @@ Now there’re several tags we’ll learn about and we’ll summarize them here 
 <xsl:copy> -- Creates a copy of the current node (without attrs and children)
 <xsl:copy-of> -- Creates copy of current node (with children and attrs)
 <xsl:text> -- Writes literal text to output.
-<xsl:function>
+<xsl:apply-template> -- applies a template rule to the current element or its children
 ```
 Now, to start, we’re going to do a very simple XSLT script to transform expressions of the form:
 
