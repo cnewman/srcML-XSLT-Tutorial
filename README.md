@@ -121,7 +121,7 @@ is properly indented. Then we output the value of the variable “ndecl” and c
 ```xslt
 <!-- Copy the generated try catch with the indentation of the original statement -->
     <xsl:value-of select="str:tokenize(preceding-sibling::text(), $newline)[2]"/>
-    <xsl:value-of select="src:indent(src:indentation(.), $ndecl)"/>
+    <xsl:value-of select="$ndecl"/>
  </xsl:template>
 ```
 
@@ -172,7 +172,7 @@ All in all, our code looks like this:
 	</xsl:variable>
 <!-- Copy the generated try catch with the indentation of the original statement -->
 	<xsl:value-of select="str:tokenize(preceding-sibling::text(), $newline)[2]"/>
-	<xsl:value-of select="src:indent(src:indentation(.), $ndecl)"/>
+	<xsl:value-of select="$ndecl"/>
  </xsl:template>
 
 </xsl:stylesheet>
