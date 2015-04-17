@@ -127,4 +127,55 @@ is properly indented. Then we output the value of the variable “ndecl” and c
 
 This completes our first transformation.
 
+All in all, our code looks like this:
+
+```
+<xsl:stylesheet
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns="http://www.sdml.info/srcML/src"
+	xmlns:src="http://www.sdml.info/srcML/src"
+	xmlns:cpp="http://www.sdml.info/srcML/cpp"
+	xmlns:lit="http://www.sdml.info/srcML/literal"
+	xmlns:op="http://www.sdml.info/srcML/operator"
+	xmlns:type="http://www.sdml.info/srcML/modifier"
+	xmlns:func="http://exslt.org/functions"
+	xmlns:common="http://exslt.org/common"
+	xmlns:str="http://exslt.org/strings"
+	xmlns:set="http://exslt.org/sets"
+        extension-element-prefixes="func"
+	version="1.0">
+
+	<xsl:include href="srcmltrans.xsl"/>
+	<!-- default identity copy -->
+	<xsl:template match="@*|node()">
+		<xsl:copy>
+	  	<xsl:apply-templates select="@*|node()"/>
+		</xsl:copy>
+	</xsl:template>
+
+	<!--
+    	Match declarations with a new operator in the declaration.
+	-->
+
+<xsl:template match="src:decl_stmt[src:decl/src:init]">
+<!-- Copy the declaration, without any part of the initialization -->
+<xsl:text> 
+</xsl:text>
+	<xsl:value-of select="str:tokenize(preceding-sibling::text(), $newline)[2]"/>
+	<xsl:copy-of select="src:decl/src:type/src:name"/>
+	<xsl:text> </xsl:text>
+	<xsl:copy-of select="src:decl/src:name"/>;
+<!-- Wrap a try catch around the initialization of the variable, now in separate statements -->
+	<xsl:variable name="ndecl">
+		<xsl:value-of select="src:decl/src:name[1]"/>
+		<xsl:value-of select="src:decl/src:init"/>;
+	</xsl:variable>
+<!-- Copy the generated try catch with the indentation of the original statement -->
+	<xsl:value-of select="str:tokenize(preceding-sibling::text(), $newline)[2]"/>
+	<xsl:value-of select="src:indent(src:indentation(.), $ndecl)"/>
+ </xsl:template>
+
+</xsl:stylesheet>
+```
+
 
